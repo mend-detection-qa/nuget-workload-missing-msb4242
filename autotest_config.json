@@ -1,15 +1,40 @@
 {
+  "version": 1.8,
   "base_config": {
     "project_url": "https://github.com/mend-detection-qa/nuget-workload-missing-msb4242",
     "ticket": "TKA-10392",
     "description": "net10.0-android MAUI project. Workload 10.0.101.1 absent from runner. Scanner must resolve packages from .csproj XML without calling dotnet restore (no MSB4242).",
+    "branch": null,
+    "_comment_branch": "Optional. Branch name to scan inside the forked probe repo. The branch must already exist in the source probe repo (manually committed). When set, the .whitesource trigger commit and the security check run on this branch instead of the default branch; all validations stay scoped to the resulting commit. If .whitesource is missing on the feature branch, it is copied from the default branch as the trigger commit. When null or omitted, the default-branch flow runs unchanged. Cleanup is handled by the existing fork-deletion hook. Example: 'qa-feature-branch'.",
+    "validate_scan_output": true,
+    "_comment_validate_scan_output": "Whether to validate the scan output/exit code. Options: true | false. Default: true",
+    "scan_output": {
+      "total_libs_scanned": {
+        "gte": 1
+      },
+      "_comment_total_libs_scanned": "Optional. Expected number of libraries scanned with comparison operator. Validates that the scan processed libraries. If not provided, this check will not be performed."
+    },
+    "validate_dependency_tree": true,
+    "_comment_validate_dependency_tree": "Whether to validate the dependency tree. Options: true | false. Default: true",
     "dependency_tree": {
-      "expected_total_dependencies_number": { "gte": 9 },
-      "expected_direct_dependencies_number": { "gte": 4 },
-      "expected_transitive_dependencies_number": { "gte": 5 },
+      "check_dependency_tree_detection_status": true,
+      "_comment_check_dependency_tree_detection_status": "Whether to check if dependency tree was successfully detected. Options: true | false. Default: true",
+      "check_update_request_sca_results": false,
+      "_comment_check_update_request_sca_results": "Whether to validate extraProperties.scaResults from the update request. Parses scaResults as JSON and asserts: (1) totalFail is empty {}, (2) no results entry has level 'ERROR'. Options: true | false. Default: false",
+      "check_system_paths": false,
+      "_comment_check_system_paths": "Whether to validate that every dependency (direct and transitive, recursive) has a non-empty systemPath field. Fires independently of any other flag whenever true. Options: true | false. Default: false.",
+      "expected_total_dependencies_number": {
+        "gte": 9
+      },
+      "expected_direct_dependencies_number": {
+        "gte": 4
+      },
+      "expected_transitive_dependencies_number": {
+        "gte": 5
+      },
+      "_comment_expected_dependencies_number": "Optional. Expected number of dependencies with comparison operator. Operators: gt (>), gte (>=), lt (<), lte (<=), eq (==). If not provided, this check will not be performed.",
       "direct_dependencies_names_list": {
-        "operator": "contains",
-        "values": [
+        "contains": [
           "Microsoft.Maui.Controls",
           "Microsoft.Maui.Core",
           "Microsoft.Extensions.Logging.Debug",
@@ -17,8 +42,7 @@
         ]
       },
       "transitive_dependencies_names_list": {
-        "operator": "contains",
-        "values": [
+        "contains": [
           "Microsoft.Maui.Graphics",
           "Microsoft.Maui.Essentials",
           "Microsoft.Extensions.Logging.Abstractions",
@@ -26,27 +50,122 @@
           "System.Text.Json"
         ]
       },
+      "_comment_dependencies_names_list": "Optional. Check specific libraries in direct dependencies. Operators: eq (==), contains (all items from expected list in actual), in(all items from actual list in expected), nin(actual list does not contain provided libs). If not provided, this check will not be performed.",
       "expected_package_managers": {
-        "operator": "contains",
-        "values": ["NuGet"]
-      }
+        "contains": [
+          "NuGet"
+        ]
+      },
+      "_comment_expected_package_managers": "Optional. Validate scanSummaryInfo.packageManagers list (values normalised to lowercase). Operators: eq (exact match), contains (actual has all expected), in (actual is subset of expected), nin (actual has none of expected). Example: {'contains': ['npm', 'maven']}. If not provided, this check will not be performed.",
+      "validate_agent_versions": false,
+      "expected_agent_version": "",
+      "expected_plugin_version": "",
+      "_comment_agent_versions": "Optional. Expected agent and plugin versions. If not provided, this check will not be performed.",
+      "validate_mend_tags": false,
+      "_comment_validate_mend_tags": "Whether to validate project tags from Mend Platform BFF API against update request extraProperties. Options: true | false. Default: false.",
+      "validate_checksums": false,
+      "_comment_validate_checksums": "Whether to validate SHA1 checksums of dependencies. Options: true | false. Default: false.",
+      "checksums_config": {
+        "check_sha1_not_empty": false,
+        "_comment_check_sha1_not_empty": "Validate that all dependencies have non-empty sha1 and/or checksums.SHA1 fields. Options: true | false. Default: false",
+        "check_sha1_format": false,
+        "_comment_check_sha1_format": "Validate that all SHA1 values are valid 40-character lowercase hex strings. Options: true | false. Default: false",
+        "check_sha1_consistency": false,
+        "_comment_check_sha1_consistency": "Validate that dep.sha1 matches dep.checksums.SHA1 when both are present. Options: true | false. Default: false",
+        "check_checksums_by_formula": false,
+        "_comment_check_checksums_by_formula": "Recompute SHA1/additionalSha1 using the known per-PM formula and compare against actual values. Options: true | false. Default: false",
+        "expected_dependency_checksums": [],
+        "_comment_expected_dependency_checksums": "Optional. List of specific dependencies with expected SHA1 values. If not provided, this check will not be performed."
+      },
+      "expected_dependency_pairs": [],
+      "_comment_expected_dependency_pairs": "Optional. List of specific dependencies asserted as {artifactId, version} PAIRS. If not provided, this check will not be performed."
     },
-    "scan_output": {
-      "total_libs_scanned": { "gte": 1 }
+    "validate_vulnerabilities_table": true,
+    "_comment_validate_vulnerabilities_table": "Whether to validate the vulnerabilities table. Options: true | false. Default: true",
+    "vulnerabilities_table": {
+      "check_vulnerabilities_table_structure": true,
+      "expected_total_vulnerabilities_number": {
+        "gte": 0
+      },
+      "vulnerabilities_ids_list": {
+        "contains": []
+      },
+      "_comment_ids_names_list": "Optional. Check specific libs ids. Operators: eq, contains, in, nin. If not provided, this check will not be performed.",
+      "vulnerabilities_names_list": {
+        "contains": []
+      },
+      "_comment_vulnerabilities_names_list": "Optional. Check specific libs names. Operators: eq, contains, in, nin. If not provided, this check will not be performed."
     },
+    "validate_scanner_logs": true,
+    "_comment_validate_scanner_logs": "Whether to validate scanner logs. Options: true | false. Default: false",
     "logs": {
+      "check_scanner_logs": true,
+      "_comment_check_scanner_logs": "Whether to check scanner logs and attach them to Report Portal. Options: true | false. Default: true",
+      "detect_secrets": false,
+      "_comment_detect_secrets": "Whether to scan scanner logs for leaked secrets. Options: true | false. Default: false.",
+      "check_external_logs": false,
+      "_comment_check_external_logs": "Whether to fetch and validate the EXTERNAL scanner log file separately from the regular scanner logs. Options: true | false. Default: false.",
       "expected_log_lines": [
         {
-          "pattern": "(?i)nuget",
+          "operator": "regex",
+          "value": "(?i)nuget",
           "description": "NuGet resolver was invoked"
+        },
+        {
+          "operator": "ne",
+          "value": "MSB4242",
+          "description": "MSB4242 must NOT appear \u2014 workload error must be suppressed by nuget.runPreStep=false"
         }
       ],
-      "unexpected_log_lines": [
-        {
-          "pattern": "MSB4242",
-          "description": "MSB4242 must NOT appear — workload error must be suppressed by nuget.runPreStep=false"
-        }
-      ]
+      "_comment_expected_log_lines": "Optional. List of log lines to validate. Each entry should have an 'operator' ('eq' substring match, 'regex' pattern match, or 'ne' substring NOT-contains) and 'value' (string or regex pattern). 'ne' is a negative assertion: validation passes when the substring is absent from every log line. If not provided, only log attachment will be performed."
+    },
+    "validate_reachability": false,
+    "_comment_validate_reachability": "Whether to validate reachability analysis. Options: true | false. Default: false.",
+    "reachability": {
+      "check_reachability_status": true,
+      "_comment_check_reachability_status": "Whether to check if reachability analysis was successfully performed. Options: true | false. Default: true",
+      "validate_issues": false,
+      "_comment_validate_issues": "Whether to validate GitHub issues created for reachable vulnerabilities. Options: true | false. Default: false.",
+      "expected_reachable_cves": {
+        "contains": []
+      },
+      "_comment_expected_reachable_cves": "Optional. List of CVE IDs expected to be marked as reachable. If not provided, this check will not be performed.",
+      "expected_unreachable_cves": {
+        "contains": []
+      },
+      "_comment_expected_unreachable_cves": "Optional. List of CVE IDs expected to be marked as unreachable. If not provided, this check will not be performed.",
+      "expected_reachable_libraries": {
+        "contains": []
+      },
+      "_comment_expected_reachable_libraries": "Optional. List of libraries with their reachable vulnerabilities. If not provided, this check will not be performed.",
+      "expected_unreachable_libraries": {
+        "contains": []
+      },
+      "_comment_expected_unreachable_libraries": "Optional. List of libraries with their unreachable vulnerabilities. If not provided, this check will not be performed.",
+      "expected_total_reachable_count": {
+        "gte": 0
+      },
+      "_comment_expected_total_reachable_count": "Optional. Expected number of reachable CVEs. If not provided, this check will not be performed.",
+      "expected_total_unreachable_count": {
+        "gte": 0
+      },
+      "_comment_expected_total_unreachable_count": "Optional. Expected number of unreachable CVEs. If not provided, this check will not be performed.",
+      "expected_reachability_traces": [],
+      "_comment_expected_reachability_traces": "Optional. List of reachability traces to validate. If not provided, trace validation will not be performed."
+    },
+    "validate_project_contributors": true,
+    "_comment_validate_project_contributors": "Whether to validate project contributors information. Options: true | false. Default: true.",
+    "contributors": {
+      "check_contributors_structure": true,
+      "_comment_check_contributors_structure": "Whether to validate basic contributors structure. Options: true | false. Default: true",
+      "expected_contributors": [],
+      "_comment_expected_contributors": "Optional. Expected contributors email validation rules. Empty [] means no email validation.",
+      "expected_min_commits": {
+        "gte": 1
+      },
+      "_comment_expected_min_commits": "Optional. Expected minimum number of commits per contributor. Default: {'gte': 1}.",
+      "expected_total_contributors": {},
+      "_comment_expected_total_contributors": "Optional. Expected total number of contributors. If not provided, this check will not be performed."
     }
   }
 }
