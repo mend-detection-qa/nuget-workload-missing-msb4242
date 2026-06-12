@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Reproduce TKA-10392: .NET 10 MAUI Android project targeting net10.0-android.
+         Workload version 10.0.101.1 may not be installed in the scan environment,
+         which previously caused MSB4242. The scanner must NOT call `dotnet restore`
+         (nuget.runPreStep=false) and must fall back to .csproj XML parsing. -->
+    <TargetFramework>net10.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>AuctionMobileApp</RootNamespace>
+    <UseMaui>true</UseMaui>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Pin SDK version that matches the customer workload version -->
+    <MauiVersion>10.0.101.1</MauiVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- MAUI workload-delivered packages -->
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.0-rc.1.25357.3" />
+    <PackageReference Include="Microsoft.Maui.Core" Version="10.0.0-rc.1.25357.3" />
+    <!-- Standard NuGet registry packages -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+  </ItemGroup>
+
+</Project>
