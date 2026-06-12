@@ -1,0 +1,52 @@
+{
+  "base_config": {
+    "project_url": "https://github.com/mend-detection-qa/nuget-workload-missing-msb4242",
+    "ticket": "TKA-10392",
+    "description": "net10.0-android MAUI project. Workload 10.0.101.1 absent from runner. Scanner must resolve packages from .csproj XML without calling dotnet restore (no MSB4242).",
+    "dependency_tree": {
+      "expected_total_dependencies_number": { "gte": 9 },
+      "expected_direct_dependencies_number": { "gte": 4 },
+      "expected_transitive_dependencies_number": { "gte": 5 },
+      "direct_dependencies_names_list": {
+        "operator": "contains",
+        "values": [
+          "Microsoft.Maui.Controls",
+          "Microsoft.Maui.Core",
+          "Microsoft.Extensions.Logging.Debug",
+          "CommunityToolkit.Mvvm"
+        ]
+      },
+      "transitive_dependencies_names_list": {
+        "operator": "contains",
+        "values": [
+          "Microsoft.Maui.Graphics",
+          "Microsoft.Maui.Essentials",
+          "Microsoft.Extensions.Logging.Abstractions",
+          "Microsoft.Extensions.DependencyInjection.Abstractions",
+          "System.Text.Json"
+        ]
+      },
+      "expected_package_managers": {
+        "operator": "contains",
+        "values": ["NuGet"]
+      }
+    },
+    "scan_output": {
+      "total_libs_scanned": { "gte": 1 }
+    },
+    "logs": {
+      "expected_log_lines": [
+        {
+          "pattern": "(?i)nuget",
+          "description": "NuGet resolver was invoked"
+        }
+      ],
+      "unexpected_log_lines": [
+        {
+          "pattern": "MSB4242",
+          "description": "MSB4242 must NOT appear — workload error must be suppressed by nuget.runPreStep=false"
+        }
+      ]
+    }
+  }
+}
