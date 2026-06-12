@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/mend-detection-qa/schemas/main/expected-tree.schema.json",
+  "project": "nuget-workload-missing-msb4242",
+  "ticket": "TKA-10392",
+  "description": "net10.0-android MAUI project. Workload 10.0.101.1 absent from runner. Scanner must resolve packages from .csproj XML without calling dotnet restore (no MSB4242).",
+  "packageManager": "NuGet",
+  "targetFramework": "net10.0-android",
+  "directDependencies": [
+    { "name": "Microsoft.Maui.Controls", "version": "10.0.0-rc.1.25357.3" },
+    { "name": "Microsoft.Maui.Core",     "version": "10.0.0-rc.1.25357.3" },
+    { "name": "Microsoft.Extensions.Logging.Debug", "version": "8.0.1" },
+    { "name": "CommunityToolkit.Mvvm",   "version": "8.3.2" }
+  ],
+  "keyTransitiveDependencies": [
+    { "name": "Microsoft.Maui.Graphics" },
+    { "name": "Microsoft.Maui.Essentials" },
+    { "name": "Microsoft.Extensions.Logging.Abstractions" },
+    { "name": "Microsoft.Extensions.DependencyInjection.Abstractions" },
+    { "name": "System.Text.Json" }
+  ],
+  "expectedCounts": {
+    "direct": { "gte": 4 },
+    "total":  { "gte": 9 }
+  },
+  "expectedScanStatus": "RESOLVED",
+  "msb4242MustNotAppear": true
+}
